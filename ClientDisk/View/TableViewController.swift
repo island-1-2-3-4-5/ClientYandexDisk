@@ -10,15 +10,18 @@ import UIKit
 
 class TableViewController: UITableViewController, LoginViewControllerDelegate {
     func handleTokenChanged(token: String) {
-        self.token = token
-        updateData()
+        StorageFiles.storage.token = token
+        
+        if StorageFiles.storage.embeded?.path == nil {
+            updateData(path: "disk:/")
+        } else {
+            updateData(path: StorageFiles.storage.embeded!.path)
+        }
     }
     
+    @IBOutlet weak var backButtonOutlet: UIBarButtonItem!
+    
 
-    var container = ["1","2","2","3","1"]
-    private var first = true
-    var token: String = ""
-    var filesData: DiskResponse?
 
 
 
@@ -32,10 +35,13 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if first {
-             updateData()
-         }
-         first = false
+        if StorageFiles.storage.embeded?.path == nil {
+            updateData(path: "disk:/")
+        } else {
+            updateData(path: StorageFiles.storage.embeded!.path)
+        }
+        
+    
     }
     
     
@@ -47,35 +53,49 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
             present(passcodeVC, animated: true, completion: nil)
         }
 
-        @objc
-        private func updateData() {
-            guard !token.isEmpty else {
+        @objc func updateData(path: String) {
+            guard let token = StorageFiles.storage.token else {
                 requestToken()
                 return
             }
-            var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources/files")
-    //        components?.queryItems = [URLQueryItem(name: "path", value: "disk:/")]
+            var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
+            components?.queryItems = [URLQueryItem(name: "path", value: path)]
 
             guard let url = components?.url else { return }
             var request = URLRequest(url: url)
             request.setValue("OAuth \(token)", forHTTPHeaderField: "Authorization")
 
             let task = URLSession.shared.dataTask(with: request) { [weak self] (data, response, error) in
-                guard let sself = self, let data = data else { return }
+                guard let self = self, let data = data else { return }
+                
+                
+                print("ДАННЫЕ КОТОРЫЕ ПРИШЛИ \(data)")
                 
                 // создаем файл из которого извлекаем данные JSON
-                guard let newFiles = try? JSONDecoder().decode(DiskResponse.self, from: data) else { return }
-                print("Received \(newFiles.items?.count ?? 0) files")
+                guard let newFiles = try? JSONDecoder().decode(StorageFiles.Embebed.self, from: data) else { return }
+                print("Received \(newFiles._embedded?.items.count ?? 0) files")
                     // Производим запись в нашу модель
-                print(newFiles)
-                        sself.filesData = newFiles
+                print("ЗАПИСЬ В БАЗУ ДАННЫХ\(newFiles)")
+                        StorageFiles.storage.embeded = newFiles
+                
+                
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
+                    if newFiles.path == "disk:/"{
+                        self.backButtonOutlet.isEnabled = false
+                        self.backButtonOutlet.title = ""
+                    } else {
+                        self.backButtonOutlet.isEnabled = true
+                        self.backButtonOutlet.title = "Назад"
+                    }
                     self.tableView.refreshControl?.endRefreshing()
                     self.tableView.reloadData()
+                                    
                 }
             }
+            
             task.resume()
+            
         }
     
     
@@ -84,41 +104,63 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     // MARK: - Table view data source
 
 
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return container.count
-    }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellOne", for: indexPath) as! TableViewCell
 
-        cell.label.text = container[indexPath.row]
         
-    
-        
+        guard let items = StorageFiles.storage.embeded?._embedded?.items, items.count > indexPath.row else {
+            return cell
+        }
+        let currentFile = items[indexPath.row]
+
+            cell.bindModel(currentFile)
         
         return cell
     }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return StorageFiles.storage.embeded?._embedded?.items.count ?? 0
+    }
+    
+    
     
 
+    
+    @IBAction func backButton(_ sender: UIBarButtonItem) {
+        
+        let name = StorageFiles.storage.embeded?.name
+        let str = (StorageFiles.storage.embeded?.path)
+        var count = str!.count - (name!.count + 1)
+
+        if count < 6{
+            count = 6
+        }
+        
+        updateData(path: str!.padding(toLength: count, withPad: "", startingAt: 0))
+
+        
+    }
+    
 
     
     func goToVC(){
         
         guard let indexPath = tableView.indexPathForSelectedRow  else {return}
 
-    if container[indexPath.row] == "2"{
-            performSegue(withIdentifier: "2", sender: self)
+        if StorageFiles.storage.embeded?._embedded?.items[indexPath.row].type == "dir"{
+
+            let path = (StorageFiles.storage.embeded?._embedded?.items[indexPath.row].path)!
+            StorageFiles.storage.embeded?.path = path
+            updateData(path: StorageFiles.storage.embeded!.path)
+            StorageFiles.storage.embeded?._embedded?.items.removeAll()
+            tableView.reloadData()
+            
+            performSegue(withIdentifier: "1", sender: self)
 
         } else {
-            let alert = UIAlertController(title: "Ваш пароль:", message: "РАБОТАЕТ", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
-            
-            alert.addAction(okAction)
-            present(alert, animated: true, completion: nil)
-            tableView.reloadData()
+            performSegue(withIdentifier: "2", sender: self)
+
         }
 
     }

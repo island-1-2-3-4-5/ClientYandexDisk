@@ -7,7 +7,13 @@
 //
 
 import Foundation
+import UIKit
 
 protocol LoginViewControllerDelegate: class {
     func handleTokenChanged(token: String)
+}
+
+
+protocol FileTableViewCellDelegate: class {
+    func loadImage(stringUrl: String, completion: @escaping ((UIImage?) -> Void))
 }
