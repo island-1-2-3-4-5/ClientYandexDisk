@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
  class StorageFiles {
 
@@ -39,5 +40,6 @@ struct DiskFile: Codable {
     let size: Int64?
     let file: String?
     let media_type: String?
+    var previewImage: Data?
 }
 }

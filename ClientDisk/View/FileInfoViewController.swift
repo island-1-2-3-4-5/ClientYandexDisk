@@ -14,10 +14,34 @@ class FileInfoViewController: UIViewController {
     @IBOutlet weak var nameFile: UILabel!
     @IBOutlet weak var downloadOutlet: UIButton!
     
+    var image: UIImage?
+    var name: String?
+    var indexPath: IndexPath?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        imageOutlet.image = image
+        nameFile.text = name
+        
 
-        // Do any additional setup after loading the view.
+
+        if StorageFiles.storage.embeded?._embedded?.items[indexPath!.row].media_type == "image"{
+        guard let url = URL(string: (StorageFiles.storage.embeded?._embedded?.items[indexPath!.row].file)!) else { return }
+        var request = URLRequest(url: url)
+        request.setValue("OAuth \(StorageFiles.storage.token!)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data else { return }
+            
+            DispatchQueue.main.async {
+                self.imageOutlet.image = UIImage(data: data)
+            }
+        }
+        task.resume()
+        
+        }
+        
+
     }
     
 

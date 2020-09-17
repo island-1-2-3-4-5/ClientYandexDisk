@@ -29,6 +29,12 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         goToVC()
+        
+        // убираем разлиновку после ячеек
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0,
+                                                         y: 0,
+                                                         width: tableView.frame.size.width,
+                                                         height: 0))
 
     }
     
@@ -113,8 +119,8 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
             return cell
         }
         let currentFile = items[indexPath.row]
-
-            cell.bindModel(currentFile)
+        cell.delegate = self
+            cell.bindModel(currentFile, indexPath)
         
         return cell
     }
@@ -136,13 +142,27 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         if count < 6{
             count = 6
         }
-        
+        // навигация назад, изменяем ссылку пути
         updateData(path: str!.padding(toLength: count, withPad: "", startingAt: 0))
 
         
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "2" {
+            let fivc: FileInfoViewController = segue.destination as! FileInfoViewController
+            let indexPath: IndexPath = self.tableView.indexPathForSelectedRow!
 
+            
+            // передаем на второй экран информацию об выбранной ности
+            fivc.name = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].name
+            fivc.indexPath = indexPath
+            guard let image = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage else { fivc.image = UIImage(named: "file")
+                return
+            }
+            fivc.image = UIImage(data: image)
+        }
+    }
     
     func goToVC(){
         
@@ -169,4 +189,23 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         goToVC()
     }
 
+}
+
+
+extension TableViewController: FileTableViewCellDelegate {
+
+    func loadImage(stringUrl: String, completion: @escaping ((UIImage?) -> Void)) {
+        guard let url = URL(string: stringUrl) else { return }
+        var request = URLRequest(url: url)
+        request.setValue("OAuth \(StorageFiles.storage.token!)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data else { return }
+            
+            DispatchQueue.main.async {
+                completion(UIImage(data: data))
+            }
+        }
+        task.resume()
+    }
 }

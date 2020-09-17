@@ -21,24 +21,35 @@ class TableViewCell: UITableViewCell {
     }
 
     @IBOutlet weak var previewImage: UIImageView!
-    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var sizeLabel: UILabel!
+
     
-    
-    func bindModel(_ model: StorageFiles.DiskFile) {
-        
+    func bindModel(_ model: StorageFiles.DiskFile, _ indexPath: IndexPath) {
+        previewImage.layer.cornerRadius = 8
         if model.type == "dir"{
         
-        label.text = "Директория" + " - " + model.name
+        nameLabel.text = "Директория" + " - " + model.name
+        previewImage.image = UIImage(named: "directory")
 
         } else {
-            label.text = "Файл" + " - " + model.name
+            let size = Double(model.size ?? 0) / 1024.0 / 1024.0
+            
+            sizeLabel.text = String(format: "%.2f", size) + " МБ"
+            nameLabel.text = "Файл" + " - " + model.name
+            
+            if let previewUrl = model.preview {
+                delegate?.loadImage(stringUrl: previewUrl, completion: { [weak self] (image) in
+                    self?.previewImage.image = image
+                    let a = image!.pngData() as Data?
+                    StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage = a
+                })
+            } else {
+                previewImage.image = UIImage(named: "file")
 
+            }
         }
-        if let previewUrl = model.preview {
-            delegate?.loadImage(stringUrl: previewUrl, completion: { [weak self] (image) in
-                self?.previewImage.image = image
-            })
-        }
+
 
         
         
@@ -49,6 +60,7 @@ class TableViewCell: UITableViewCell {
     // срабатывает каждый раз когда создается(переиспользуется) ячейка
     override func prepareForReuse() {
         previewImage.image = nil
+        sizeLabel.text = nil
         super.prepareForReuse()
     }
 
