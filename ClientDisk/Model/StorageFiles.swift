@@ -15,11 +15,14 @@ static var storage = StorageFiles()
     
     var embeded: Embebed?
     var token: String?
+    var path: String?
+    var file: String?
     
 struct Embebed: Codable {
     var _embedded: DiskResponse?
     var path: String
     let name: String
+    
 }
 
 struct DiskResponse: Codable {

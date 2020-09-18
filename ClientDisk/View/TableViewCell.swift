@@ -27,6 +27,14 @@ class TableViewCell: UITableViewCell {
     
     func bindModel(_ model: StorageFiles.DiskFile, _ indexPath: IndexPath) {
         previewImage.layer.cornerRadius = 8
+        previewImage.layer.shadowOffset = CGSize(width: 0, height: 0)
+        previewImage.layer.shadowColor = UIColor.black.cgColor
+        previewImage.layer.shadowRadius = 4
+        previewImage.layer.shadowOpacity = 0.3
+        
+        
+        
+        
         if model.type == "dir"{
         
         nameLabel.text = "Директория" + " - " + model.name

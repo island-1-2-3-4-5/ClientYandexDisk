@@ -80,7 +80,6 @@
                                 <action selector="backButton:" destination="i4g-Ey-TGl" id="8kb-TE-W2l"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="gz1-SL-HeJ"/>
                     </navigationItem>
                     <connections>
                         <outlet property="backButtonOutlet" destination="8Uz-44-KlS" id="C3W-Kh-tiG"/>
@@ -99,14 +98,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nop-1d-z0S">
-                                <rect key="frame" x="157" y="541" width="100" height="45"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="27"/>
-                                <state key="normal" title="Скачать"/>
-                                <connections>
-                                    <action selector="downloadAction:" destination="7xA-ZH-gsY" eventType="touchUpInside" id="MR7-lg-KRR"/>
-                                </connections>
-                            </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mcQ-fD-sBd">
                                 <rect key="frame" x="0.0" y="44" width="414" height="150"/>
                                 <constraints>
@@ -127,15 +118,12 @@
                             <constraint firstItem="mcQ-fD-sBd" firstAttribute="trailing" secondItem="dTa-24-jv6" secondAttribute="trailing" id="LiR-hh-FUd"/>
                             <constraint firstItem="1g3-s4-VuQ" firstAttribute="leading" secondItem="dTa-24-jv6" secondAttribute="leading" constant="16" id="W5q-FG-sSK"/>
                             <constraint firstItem="1g3-s4-VuQ" firstAttribute="top" secondItem="mcQ-fD-sBd" secondAttribute="bottom" constant="28" id="Z74-nU-6wf"/>
-                            <constraint firstItem="Nop-1d-z0S" firstAttribute="centerX" secondItem="SpZ-YT-EMm" secondAttribute="centerX" id="avU-Et-VXh"/>
-                            <constraint firstItem="dTa-24-jv6" firstAttribute="bottom" secondItem="Nop-1d-z0S" secondAttribute="bottom" constant="150" id="n9O-6a-JqH"/>
                             <constraint firstItem="mcQ-fD-sBd" firstAttribute="leading" secondItem="dTa-24-jv6" secondAttribute="leading" id="xjm-dE-odU"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="dTa-24-jv6"/>
                     </view>
                     <navigationItem key="navigationItem" id="cpp-cz-D1H"/>
                     <connections>
-                        <outlet property="downloadOutlet" destination="Nop-1d-z0S" id="a2v-9l-0Om"/>
                         <outlet property="imageOutlet" destination="mcQ-fD-sBd" id="vmA-Ql-MEu"/>
                         <outlet property="nameFile" destination="1g3-s4-VuQ" id="cme-fN-L1F"/>
                     </connections>

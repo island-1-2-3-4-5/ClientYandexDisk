@@ -9,25 +9,38 @@
 import UIKit
 
 class TableViewController: UITableViewController, LoginViewControllerDelegate {
+
+    
+    //MARK: - Получение токена
     func handleTokenChanged(token: String) {
         StorageFiles.storage.token = token
         
-        if StorageFiles.storage.embeded?.path == nil {
-            updateData(path: "disk:/")
-        } else {
-            updateData(path: StorageFiles.storage.embeded!.path)
-        }
+        requestPath()
     }
     
+    
+         func requestToken() {
+            let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
+            passcodeVC.delegate = self
+            passcodeVC.modalPresentationStyle = .overFullScreen
+            present(passcodeVC, animated: true, completion: nil)
+        }
+    
+    
+    
+    // кнопка назад
     @IBOutlet weak var backButtonOutlet: UIBarButtonItem!
     
+    let documentInteractionController = UIDocumentInteractionController()
 
 
 
 
-    
+    //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // метод навигации
         goToVC()
         
         // убираем разлиновку после ячеек
@@ -35,31 +48,51 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                                                          y: 0,
                                                          width: tableView.frame.size.width,
                                                          height: 0))
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(requestPath), for: .valueChanged)
+        tableView.refreshControl = refreshControl
 
+        
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(gesture:)))
+        
+        longPress.minimumPressDuration = 0.5
+        view.addGestureRecognizer(longPress)
+        
+        
+        if StorageFiles.storage.path != nil{
+            okBarButton()
+
+        } else {
+            addBarButton()
+        }
+        
     }
     
     
+    
+    
+    
+    //MARK: - ViewWillAppear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        requestPath()
+    }
+    
+    
+    
+    
+  @objc  func requestPath(){
         if StorageFiles.storage.embeded?.path == nil {
             updateData(path: "disk:/")
         } else {
             updateData(path: StorageFiles.storage.embeded!.path)
         }
-        
-    
     }
     
-    
-    
-        private func requestToken() {
-            let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
-            passcodeVC.delegate = self
-            passcodeVC.modalPresentationStyle = .overFullScreen
-            present(passcodeVC, animated: true, completion: nil)
-        }
-
-        @objc func updateData(path: String) {
+    //MARK: - Загрузка данных
+         func updateData(path: String) {
             guard let token = StorageFiles.storage.token else {
                 requestToken()
                 return
@@ -85,6 +118,7 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                         StorageFiles.storage.embeded = newFiles
                 
                 
+//MARK: Обновление интерфейса
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     if newFiles.path == "disk:/"{
@@ -105,34 +139,251 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         }
     
     
-    
-
-    // MARK: - Table view data source
-
-
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellOne", for: indexPath) as! TableViewCell
-
+    //MARK: - Долгое нажатие
+    @objc func onLongPress(gesture: UILongPressGestureRecognizer) {
         
-        guard let items = StorageFiles.storage.embeded?._embedded?.items, items.count > indexPath.row else {
-            return cell
+        let point = gesture.location(in: tableView)
+        guard let indexPath = tableView.indexPathForRow(at: point) else { return }
+        let item = StorageFiles.storage.embeded?._embedded!.items[indexPath.row].path
+        let itemFile = StorageFiles.storage.embeded?._embedded!.items[indexPath.row].file
+        StorageFiles.storage.path = item
+        StorageFiles.storage.file = itemFile
+
+
+                   // экземпляр AlertController
+                   let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+                   
+        
+                   // первая кнопка
+                   let replace = UIAlertAction(title: "Переместить", style: .default) { _ in
+                      
+     
+                    self.okBarButton()
+                    
         }
-        let currentFile = items[indexPath.row]
-        cell.delegate = self
-            cell.bindModel(currentFile, indexPath)
+                   
+                   // сдвигаем текст влево на всплывающем уведомлении
+                   replace.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+                   
+                   
+                   // вторая кнопка - вызывает галерею
+                   let rename = UIAlertAction(title: "Скачать", style: .default) { _ in
+
+                    self.download()
+                    
+                   }
+                   // сдвигаем текст влево на всплывающем уведомлении
+                   rename.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+                   
+                   // кнопка выхода
+                   let cancel = UIAlertAction(title: "Отмена", style: .cancel)
+                   
+                   // добавляем действия
+                   actionSheet.addAction(replace)
+                   actionSheet.addAction(rename)
+                   actionSheet.addAction(cancel)
+                   
+                   // отображаем AlertController
+                   present(actionSheet, animated: true)
+
+
+    }
+    
+    
+    //MARK: okBarButton
+    func okBarButton(){
+        let aboutButton = UIBarButtonItem(title: "Ок", style: .plain, target: self, action: #selector(self.replace))
+        self.navigationItem.rightBarButtonItem = aboutButton
         
-        return cell
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return StorageFiles.storage.embeded?._embedded?.items.count ?? 0
     }
     
     
-    
+    //MARK: Перемещение файлов
+    @objc func replace(){
+        addBarButton()
+        
+        guard let token = StorageFiles.storage.token else {
+            self.requestToken()
+            return
+        }
+        // Откуда
+        let fileUrl = StorageFiles.storage.path
+        
+        let fullNameArr = fileUrl!.components(separatedBy: "/")
+        
+        //Куда
+        var path = ""
+        
+        if StorageFiles.storage.embeded!.path == "disk:/"{
+            path = StorageFiles.storage.embeded!.path + fullNameArr[fullNameArr.count - 1]
+        } else {
+            path = StorageFiles.storage.embeded!.path + "/" + fullNameArr[fullNameArr.count - 1]
+        }
+                                  
+
+        var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources/move")
+        
+              components?.queryItems = [
+                  URLQueryItem(name: "from", value: fileUrl),
+                  URLQueryItem(name: "path", value: path),
+              ]
+              guard let url = components?.url else { return }
+              var request = URLRequest(url: url)
+              request.httpMethod = "POST"
+        request.setValue("OAuth \(String(describing: token))", forHTTPHeaderField: "Authorization")
+
+              URLSession.shared.dataTask(with: request) { (data, response, error) in
+                  if let response = response as? HTTPURLResponse {
+                      switch response.statusCode {
+                      case 200..<300:
+                          print("Success")
+                      default:
+                          print("Status: \(response.statusCode)")
+                      }
+
+                  }
+                //MARK: Обновление интерфейса
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.requestPath()
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                                    
+                }
+              }.resume()
+        
+        StorageFiles.storage.path = nil
+    }
 
     
+    
+    
+    //MARK: addBarButton
+
+    func addBarButton(){
+        let aboutButton = UIBarButtonItem.SystemItem.add
+        let button = UIBarButtonItem(barButtonSystemItem: aboutButton, target: self, action: #selector(add))
+        navigationItem.rightBarButtonItem = button
+    }
+    
+    
+    @objc func add(){
+        
+        
+        // Создаем Алерт контроллер для добавления значений
+        let ac = UIAlertController(title: "Добавление директории", message: "Введите название", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "Ok", style: .default) { action in
+            guard let name = ac.textFields?[0].text else { return }
+         
+            self.addFolder(name)
+            
+        }
+        
+        
+        ac.addTextField{
+            textField in
+        }
+
+        let cancel = UIAlertAction(title: "Отмена", style: .cancel)
+
+        ac.addAction(ok)
+        ac.addAction(cancel)
+        present(ac, animated: true, completion: nil) // отображаем на экране
+        
+
+    }
+    
+    func addFolder(_ name: String?){
+               
+    guard let token = StorageFiles.storage.token else {
+        self.requestToken()
+        return
+        }
+        // Куда
+        var path = ""
+        
+        if StorageFiles.storage.embeded!.path == "disk:/" {
+             path = StorageFiles.storage.embeded!.path + name!
+
+        } else {
+             path = StorageFiles.storage.embeded!.path + "/" + name!
+
+        }
+        
+        var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
+                    
+        components?.queryItems = [ URLQueryItem(name: "path", value: path)]
+        guard let url = components?.url else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("OAuth \(String(describing: token))", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+        if let response = response as? HTTPURLResponse {
+            switch response.statusCode {
+                case 200..<300:
+                    print("Success")
+                default:
+                    print("Status: \(response.statusCode)")
+                }
+
+        }
+    //MARK: Обновление интерфейса
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.requestPath()
+            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
+            }
+            }.resume()
+        
+    }
+    
+    
+    
+    
+    
+    func download(){
+
+        let path = StorageFiles.storage.file
+        
+        downloadFile(path)
+
+    }
+    
+    
+    
+    func downloadFile(_ path: String?){
+        guard let url = URL(string: path!) else { return }
+         URLSession.shared.dataTask(with: url) { data, response, error in
+             guard let data = data, error == nil else { return }
+             let tmpURL = FileManager.default.temporaryDirectory
+                 .appendingPathComponent(response?.suggestedFilename ?? "fileName.csv")
+             do {
+                 try data.write(to: tmpURL)
+                 DispatchQueue.main.async {
+                     self.share(url: tmpURL)
+                 }
+             } catch {
+                 print(error)
+             }
+
+         }.resume()
+                    
+                    
+
+    }
+    
+    func share(url: URL) {
+        documentInteractionController.url = url
+        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.localizedName ?? url.lastPathComponent
+        documentInteractionController.presentOptionsMenu(from: view.frame, in: view, animated: true)
+    }
+    
+
+
+    //MARK: Навигация назад
     @IBAction func backButton(_ sender: UIBarButtonItem) {
         
         let name = StorageFiles.storage.embeded?.name
@@ -148,6 +399,8 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         
     }
     
+    
+    //MARK: - Навигация для файлов
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "2" {
             let fivc: FileInfoViewController = segue.destination as! FileInfoViewController
@@ -164,6 +417,9 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         }
     }
     
+    
+    
+    //MARK: Навигация для директорий
     func goToVC(){
         
         guard let indexPath = tableView.indexPathForSelectedRow  else {return}
@@ -185,6 +441,32 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
     }
     
+
+    
+    // MARK: - Table view data source
+
+
+    //MARK: Настройка ячейки
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellOne", for: indexPath) as! TableViewCell
+
+        
+        guard let items = StorageFiles.storage.embeded?._embedded?.items, items.count > indexPath.row else {
+            return cell
+        }
+        let currentFile = items[indexPath.row]
+        cell.delegate = self
+            cell.bindModel(currentFile, indexPath)
+        
+        return cell
+    }
+
+    //MARK: Количество строк
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return StorageFiles.storage.embeded?._embedded?.items.count ?? 0
+    }
+    
+    //MARK: - Выделение ячейки
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         goToVC()
     }
@@ -192,6 +474,8 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 }
 
 
+
+//MARK: Загрузка изображений
 extension TableViewController: FileTableViewCellDelegate {
 
     func loadImage(stringUrl: String, completion: @escaping ((UIImage?) -> Void)) {

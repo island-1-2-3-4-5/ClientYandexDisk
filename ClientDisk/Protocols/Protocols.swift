@@ -17,3 +17,13 @@ protocol LoginViewControllerDelegate: class {
 protocol FileTableViewCellDelegate: class {
     func loadImage(stringUrl: String, completion: @escaping ((UIImage?) -> Void))
 }
+
+
+extension URL {
+    var typeIdentifier: String? {
+        return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
+    }
+    var localizedName: String? {
+        return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
+    }
+}
