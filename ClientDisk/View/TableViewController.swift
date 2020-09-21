@@ -146,7 +146,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         guard let indexPath = tableView.indexPathForRow(at: point) else { return }
         let item = StorageFiles.storage.embeded?._embedded!.items[indexPath.row].path
         let itemFile = StorageFiles.storage.embeded?._embedded!.items[indexPath.row].file
-        StorageFiles.storage.path = item
         StorageFiles.storage.file = itemFile
 
 
@@ -154,8 +153,17 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                    let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
                    
         
+        let deleteIcon = #imageLiteral(resourceName: "pngwing.com (4)")
+        let replaceIcon = #imageLiteral(resourceName: "pngwing.com (3)")
+        let downloadIcon = #imageLiteral(resourceName: "pngwing.com (5)")
+
+        
+        
+        
                    // первая кнопка
                    let replace = UIAlertAction(title: "Переместить", style: .default) { _ in
+                    StorageFiles.storage.path = item
+
                       
      
                     self.okBarButton()
@@ -164,23 +172,39 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                    
                    // сдвигаем текст влево на всплывающем уведомлении
                    replace.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
-                   
+                   replace.setValue(replaceIcon, forKey: "image")
+
                    
                    // вторая кнопка - вызывает галерею
-                   let rename = UIAlertAction(title: "Скачать", style: .default) { _ in
+                   let download = UIAlertAction(title: "Скачать", style: .default) { _ in
 
                     self.download()
                     
                    }
                    // сдвигаем текст влево на всплывающем уведомлении
-                   rename.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
-                   
+                   download.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+                   download.setValue(downloadIcon, forKey: "image")
+
+        
+        
+        
+                let delete = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+                    StorageFiles.storage.path = item
+
+                    self.delete()
+         
+                    }
+                delete.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+            delete.setValue(deleteIcon, forKey: "image")
+        
+        
                    // кнопка выхода
                    let cancel = UIAlertAction(title: "Отмена", style: .cancel)
                    
                    // добавляем действия
                    actionSheet.addAction(replace)
-                   actionSheet.addAction(rename)
+                   actionSheet.addAction(download)
+                   actionSheet.addAction(delete)
                    actionSheet.addAction(cancel)
                    
                    // отображаем AlertController
@@ -381,23 +405,56 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         documentInteractionController.presentOptionsMenu(from: view.frame, in: view, animated: true)
     }
     
+    
+    
+    func delete(){
+        let path = StorageFiles.storage.path
 
-
-    //MARK: Навигация назад
-    @IBAction func backButton(_ sender: UIBarButtonItem) {
-        
-        let name = StorageFiles.storage.embeded?.name
-        let str = (StorageFiles.storage.embeded?.path)
-        var count = str!.count - (name!.count + 1)
-
-        if count < 6{
-            count = 6
-        }
-        // навигация назад, изменяем ссылку пути
-        updateData(path: str!.padding(toLength: count, withPad: "", startingAt: 0))
-
+        deleteFile(path)
         
     }
+    
+    func deleteFile(_ path: String?){
+        guard let token = StorageFiles.storage.token else {
+            self.requestToken()
+            return
+        }
+       
+              
+
+        var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
+        
+              components?.queryItems = [ URLQueryItem(name: "path", value: path)]
+              guard let url = components?.url else { return }
+              var request = URLRequest(url: url)
+              request.httpMethod = "DELETE"
+        request.setValue("OAuth \(String(describing: token))", forHTTPHeaderField: "Authorization")
+
+              URLSession.shared.dataTask(with: request) { (data, response, error) in
+                  if let response = response as? HTTPURLResponse {
+                      switch response.statusCode {
+                      case 200..<300:
+                          print("Success")
+                      default:
+                          print("Status: \(response.statusCode)")
+                      }
+
+                  }
+                //MARK: Обновление интерфейса
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.requestPath()
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                                    
+                }
+              }.resume()
+        
+        StorageFiles.storage.path = nil
+    }
+
+
+
     
     
     //MARK: - Навигация для файлов
@@ -409,8 +466,18 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
             
             // передаем на второй экран информацию об выбранной ности
             fivc.name = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].name
-            fivc.indexPath = indexPath
-            guard let image = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage else { fivc.image = UIImage(named: "file")
+            fivc.created = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].created
+            fivc.mimeType = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].mime_type
+            fivc.size = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].size
+   
+            
+            guard let image = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage else {
+                
+                if StorageFiles.storage.embeded?._embedded?.items[indexPath.row].media_type == "audio"{
+                    fivc.image = UIImage(named: "mp3")
+                } else {
+                fivc.image = UIImage(named: "file")
+                }
                 return
             }
             fivc.image = UIImage(data: image)
@@ -439,6 +506,27 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
         }
 
+    }
+    
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
+        let name = StorageFiles.storage.embeded?.name
+          let str = (StorageFiles.storage.embeded?.path)
+          var count = str!.count - (name!.count + 1)
+
+          if count < 6{
+              count = 6
+          }
+        
+        let path = str!.padding(toLength: count, withPad: "", startingAt: 0)
+        StorageFiles.storage.embeded!.path = path
+        
+          // навигация назад, изменяем ссылку пути
+          updateData(path: path)
+        StorageFiles.storage.embeded?._embedded?.items.removeAll()
+        tableView.reloadData()
+        self.viewDidLoad()
+//        okBarButton()
+//        tableView.reloadData()
     }
     
 

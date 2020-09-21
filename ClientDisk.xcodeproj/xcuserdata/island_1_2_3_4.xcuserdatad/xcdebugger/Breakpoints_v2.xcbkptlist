@@ -7,172 +7,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "754F2309-B065-4BBB-BA0C-53420F1DAA3B"
+            uuid = "AB844FF7-FB0E-42A5-9C52-493B03E41519"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ClientDisk/View/TableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
-            landmarkName = "download()"
+            startingLineNumber = "410"
+            endingLineNumber = "410"
+            landmarkName = "delete()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "83FC83F1-DC20-47AF-A02D-1C050BB4ACED"
+            uuid = "9E81C95D-F43A-4735-A394-972D4F6E7ADC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ClientDisk/View/TableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "22"
-            endingLineNumber = "22"
-            landmarkName = "requestToken()"
+            startingLineNumber = "417"
+            endingLineNumber = "417"
+            landmarkName = "deleteFile(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8"
+            uuid = "2FE3938C-3D28-46FA-9D22-15D9C0C06D5B"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ClientDisk/View/LoginViewController.swift"
+            filePath = "ClientDisk/View/TableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "21"
-            endingLineNumber = "21"
-            landmarkName = "LoginViewController"
-            landmarkType = "3">
-            <Locations>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - 7a96bb4a46e0d621"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.webView.getter : Swift.Optional&lt;__C.WKWebView&gt;"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "21"
-                  endingLineNumber = "21"
-                  offsetFromSymbolStart = "88">
-               </Location>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - e0e05f0ed7ab8a15"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.webView.setter : Swift.Optional&lt;__C.WKWebView&gt;"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "21"
-                  endingLineNumber = "21"
-                  offsetFromSymbolStart = "155">
-               </Location>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - 1bbfd6d5abbc9724"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.webView.modify : Swift.Optional&lt;__C.WKWebView&gt;"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "0"
-                  endingLineNumber = "0"
-                  offsetFromSymbolStart = "65">
-               </Location>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - 7238889a6665a67b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.webView.modify : Swift.Optional&lt;__C.WKWebView&gt; with unmangled suffix &quot;.resume.0&quot;"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "21"
-                  endingLineNumber = "21"
-                  offsetFromSymbolStart = "80">
-               </Location>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - de5d002e6a2ffa86"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; ClientDisk.LoginViewController"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "21"
-                  endingLineNumber = "21"
-                  offsetFromSymbolStart = "474">
-               </Location>
-               <Location
-                  uuid = "8C9DFE34-BB0A-431D-A32D-5FBF5024B6E8 - fdc541eb3ab2217d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ClientDisk.LoginViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;ClientDisk.LoginViewController&gt;"
-                  moduleName = "ClientDisk"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/island_1_2_3_4/Desktop/ClientDisk/ClientDisk/View/LoginViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "21"
-                  endingLineNumber = "21"
-                  offsetFromSymbolStart = "409">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4AE82F1D-633C-4DA5-A746-A19CE031470A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ClientDisk/View/LoginViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FA53F53D-D443-4599-B960-C7832425719C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ClientDisk/View/LoginViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "413"
+            endingLineNumber = "413"
+            landmarkName = "delete()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

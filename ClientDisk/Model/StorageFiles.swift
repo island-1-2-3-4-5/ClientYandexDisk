@@ -44,5 +44,7 @@ struct DiskFile: Codable {
     let file: String?
     let media_type: String?
     var previewImage: Data?
+    let mime_type: String?
+    let created: String?
 }
 }

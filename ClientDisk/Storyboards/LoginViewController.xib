@@ -9,6 +9,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginViewController" customModule="ClientDisk" customModuleProvider="target">
             <connections>
+                <outlet property="indicator" destination="aMd-6y-icx" id="r6W-is-bVL"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="webView" destination="Onq-nt-D6z" id="oXm-9w-FSN"/>
             </connections>
@@ -25,13 +26,18 @@
                         <wkPreferences key="preferences"/>
                     </wkWebViewConfiguration>
                 </wkWebView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="aMd-6y-icx">
+                    <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
+                </activityIndicatorView>
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <constraints>
                 <constraint firstItem="Onq-nt-D6z" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="5Ue-gQ-HFT"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Onq-nt-D6z" secondAttribute="bottom" id="9tD-WZ-PPV"/>
                 <constraint firstItem="Onq-nt-D6z" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="OtH-FY-pDp"/>
+                <constraint firstItem="aMd-6y-icx" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="baH-1s-BAP"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Onq-nt-D6z" secondAttribute="trailing" id="bi3-02-V8v"/>
+                <constraint firstItem="aMd-6y-icx" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="yV4-Zq-ecJ"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <point key="canvasLocation" x="139" y="125"/>

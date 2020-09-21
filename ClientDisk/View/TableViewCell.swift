@@ -23,7 +23,8 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var previewImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var sizeLabel: UILabel!
-
+    @IBOutlet weak var typeLabel: UILabel!
+    
     
     func bindModel(_ model: StorageFiles.DiskFile, _ indexPath: IndexPath) {
         previewImage.layer.cornerRadius = 8
@@ -37,14 +38,24 @@ class TableViewCell: UITableViewCell {
         
         if model.type == "dir"{
         
-        nameLabel.text = "Директория" + " - " + model.name
+        nameLabel.text = model.name
         previewImage.image = UIImage(named: "directory")
 
         } else {
-            let size = Double(model.size ?? 0) / 1024.0 / 1024.0
+            var size = Double(model.size ?? 0) / 1024.0 / 1024.0
             
-            sizeLabel.text = String(format: "%.2f", size) + " МБ"
-            nameLabel.text = "Файл" + " - " + model.name
+            if size > 1000 {
+                size /= 1024.0
+                sizeLabel.text = String(format: "%.2f", size) + " ГБ"
+
+            } else {
+                sizeLabel.text = String(format: "%.2f", size) + " МБ"
+            }
+            
+            nameLabel.text = model.name
+            
+            let type = model.mime_type?.components(separatedBy: "/")
+            typeLabel.text = type![type!.count - 1]
             
             if let previewUrl = model.preview {
                 delegate?.loadImage(stringUrl: previewUrl, completion: { [weak self] (image) in
@@ -52,7 +63,11 @@ class TableViewCell: UITableViewCell {
                     let a = image!.pngData() as Data?
                     StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage = a
                 })
+            } else if model.media_type == "audio" {
+                previewImage.image = UIImage(named: "mp3")
+
             } else {
+
                 previewImage.image = UIImage(named: "file")
 
             }
@@ -69,6 +84,7 @@ class TableViewCell: UITableViewCell {
     override func prepareForReuse() {
         previewImage.image = nil
         sizeLabel.text = nil
+        typeLabel.text = nil
         super.prepareForReuse()
     }
 

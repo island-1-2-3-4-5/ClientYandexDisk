@@ -11,7 +11,7 @@ import WebKit
 
 
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UIWebViewDelegate {
     
     let clientId = "afa4121bb9c840f999d5654548657d77" // здесь должен быть ID вашего зарегистрированного приложения
     let scheme = "myclouddisk" // схема для callback
@@ -19,18 +19,32 @@ class LoginViewController: UIViewController {
 
     
     @IBOutlet weak var webView: WKWebView!
-
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        webView.navigationDelegate = self
 
         guard let request = tokenGetRequest else { return }
         webView.load(request)
         webView.navigationDelegate = self
+
+        
+        
     }
 
 
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+                indicator.startAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+                indicator.stopAnimating()
+                indicator.isHidden = true
+    }
 
     private var tokenGetRequest: URLRequest? {
         guard var urlComponents = URLComponents(string: "https://oauth.yandex.ru/authorize") else { return nil }
