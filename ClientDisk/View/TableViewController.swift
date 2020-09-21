@@ -63,12 +63,12 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     }
     
     
-         func requestToken() {
-            let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
-            passcodeVC.delegate = self
-            passcodeVC.modalPresentationStyle = .overFullScreen
-            present(passcodeVC, animated: true, completion: nil)
-        }
+    func requestToken() {
+        let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
+        passcodeVC.delegate = self
+        passcodeVC.modalPresentationStyle = .overFullScreen
+        present(passcodeVC, animated: true, completion: nil)
+    }
     
     
     
@@ -92,49 +92,48 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     }
     
     //MARK: - Загрузка данных
-         func updateData(path: String) {
-            guard let token = StorageFiles.storage.token else {
-                requestToken()
-                return
-            }
-            var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
-            components?.queryItems = [URLQueryItem(name: "path", value: path)]
 
-            guard let url = components?.url else { return }
-            var request = URLRequest(url: url)
-            request.setValue("OAuth \(token)", forHTTPHeaderField: "Authorization")
+    func updateData(path: String) {
+        guard let token = StorageFiles.storage.token else {
+            requestToken()
+            return
+        }
+        var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
+        components?.queryItems = [URLQueryItem(name: "path", value: path)]
 
-            let task = URLSession.shared.dataTask(with: request) { [weak self] (data, response, error) in
-                guard let self = self, let data = data else { return }
-                
-                
-                print("ДАННЫЕ КОТОРЫЕ ПРИШЛИ \(data)")
-                
-                // создаем файл из которого извлекаем данные JSON
-                guard let newFiles = try? JSONDecoder().decode(StorageFiles.Embebed.self, from: data) else { return }
-                print("Received \(newFiles._embedded?.items.count ?? 0) files")
-                    // Производим запись в нашу модель
-                print("ЗАПИСЬ В БАЗУ ДАННЫХ\(newFiles)")
-                        StorageFiles.storage.embeded = newFiles
-                
-                    DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    if newFiles.path == "disk:/"{
-                        self.backButtonOutlet.isEnabled = false
-                        self.backButtonOutlet.title = ""
-                    } else {
-                        self.backButtonOutlet.isEnabled = true
-                        self.backButtonOutlet.title = "Назад"
-                    }
-                    self.tableView.refreshControl?.endRefreshing()
-                    self.tableView.reloadData()
-                                    
-                }
-            }
+        guard let url = components?.url else { return }
+        var request = URLRequest(url: url)
+        request.setValue("OAuth \(token)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.dataTask(with: request) { [weak self] (data, response, error) in
             
-            task.resume()
+            guard let self = self, let data = data else { return }
+                                
+            // создаем файл из которого извлекаем данные JSON
+            guard let newFiles = try? JSONDecoder().decode(StorageFiles.Embebed.self, from: data) else { return }
+            // Производим запись в нашу модель
+            print("ЗАПИСЬ В БАЗУ ДАННЫХ\(newFiles)")
+            StorageFiles.storage.embeded = newFiles
+                
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                if newFiles.path == "disk:/"{
+                    self.backButtonOutlet.isEnabled = false
+                    self.backButtonOutlet.title = ""
+                } else {
+                    self.backButtonOutlet.isEnabled = true
+                    self.backButtonOutlet.title = "Назад"
+                }
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+                                    
+            }
             
         }
+            
+        task.resume()
+            
+    }
     
     
     //MARK: - Долгое нажатие
@@ -147,62 +146,52 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         StorageFiles.storage.file = itemFile
 
 
-                   // экземпляр AlertController
-                   let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        // экземпляр AlertController
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
                    
-        
         let deleteIcon = #imageLiteral(resourceName: "pngwing.com (4)")
         let replaceIcon = #imageLiteral(resourceName: "pngwing.com (3)")
         let downloadIcon = #imageLiteral(resourceName: "pngwing.com (5)")
-
         
-                   // первая кнопка
-                   let replace = UIAlertAction(title: "Переместить", style: .default) { _ in
-                    StorageFiles.storage.path = item
-
-                      
-     
-                    self.okBarButton()
-                    
+        // первая кнопка
+        let replace = UIAlertAction(title: "Переместить", style: .default) { _ in
+            StorageFiles.storage.path = item
+            self.okBarButton()
         }
                    
-                   // сдвигаем текст влево на всплывающем уведомлении
-                   replace.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
-                   replace.setValue(replaceIcon, forKey: "image")
-
-                   
-                   // вторая кнопка - вызывает галерею
-                   let download = UIAlertAction(title: "Скачать", style: .default) { _ in
-
-                    self.download()
-                    
-                   }
-                   // сдвигаем текст влево на всплывающем уведомлении
-                   download.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
-                   download.setValue(downloadIcon, forKey: "image")
-
+        // сдвигаем текст влево на всплывающем уведомлении
+        replace.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        replace.setValue(replaceIcon, forKey: "image")
         
-                let delete = UIAlertAction(title: "Удалить", style: .destructive) { _ in
-                    StorageFiles.storage.path = item
+        // вторая кнопка - вызывает галерею
+        let download = UIAlertAction(title: "Скачать", style: .default) { _ in
 
-                    self.delete()
-         
-                    }
-                delete.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
-            delete.setValue(deleteIcon, forKey: "image")
+            self.download()
+            
+        }
+        // сдвигаем текст влево на всплывающем уведомлении
+        download.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        download.setValue(downloadIcon, forKey: "image")
         
+        let delete = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+            StorageFiles.storage.path = item
+            self.delete()
+            
+        }
+        delete.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        delete.setValue(deleteIcon, forKey: "image")
         
-                   // кнопка выхода
-                   let cancel = UIAlertAction(title: "Отмена", style: .cancel)
+        // кнопка выхода
+        let cancel = UIAlertAction(title: "Отмена", style: .cancel)
                    
-                   // добавляем действия
-                   actionSheet.addAction(replace)
-                   actionSheet.addAction(download)
-                   actionSheet.addAction(delete)
-                   actionSheet.addAction(cancel)
-                   
-                   // отображаем AlertController
-                   present(actionSheet, animated: true)
+        // добавляем действия
+        actionSheet.addAction(replace)
+        actionSheet.addAction(download)
+        actionSheet.addAction(delete)
+        actionSheet.addAction(cancel)
+            
+        // отображаем AlertController
+        present(actionSheet, animated: true)
 
     }
     
@@ -240,35 +229,37 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
         var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources/move")
         
-              components?.queryItems = [
-                  URLQueryItem(name: "from", value: fileUrl),
-                  URLQueryItem(name: "path", value: path),
-              ]
-              guard let url = components?.url else { return }
-              var request = URLRequest(url: url)
-              request.httpMethod = "POST"
+        components?.queryItems = [
+            URLQueryItem(name: "from", value: fileUrl),
+            URLQueryItem(name: "path", value: path),
+        ]
+        guard let url = components?.url else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
         request.setValue("OAuth \(String(describing: token))", forHTTPHeaderField: "Authorization")
 
-              URLSession.shared.dataTask(with: request) { (data, response, error) in
-                  if let response = response as? HTTPURLResponse {
-                      switch response.statusCode {
-                      case 200..<300:
-                          print("Success")
-                      default:
-                          print("Status: \(response.statusCode)")
-                      }
-
-                  }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.requestPath()
-                    self.tableView.refreshControl?.endRefreshing()
-                    self.tableView.reloadData()
-                                    
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let response = response as? HTTPURLResponse {
+                switch response.statusCode {
+                case 200..<300:
+                print("Success")
+                default:
+                print("Status: \(response.statusCode)")
+                    
                 }
-              }.resume()
-        
+                
+            }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.requestPath()
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+                
+            }
+            
+        }.resume()
         StorageFiles.storage.path = nil
+        
     }
 
     
@@ -315,10 +306,10 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         var path = ""
         
         if StorageFiles.storage.embeded!.path == "disk:/" {
-             path = StorageFiles.storage.embeded!.path + name!
+            path = StorageFiles.storage.embeded!.path + name!
 
         } else {
-             path = StorageFiles.storage.embeded!.path + "/" + name!
+            path = StorageFiles.storage.embeded!.path + "/" + name!
 
         }
         
@@ -346,7 +337,8 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
             }
-            }.resume()
+            
+        }.resume()
         
     }
     
@@ -397,30 +389,31 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
         var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
         
-              components?.queryItems = [ URLQueryItem(name: "path", value: path)]
-              guard let url = components?.url else { return }
-              var request = URLRequest(url: url)
-              request.httpMethod = "DELETE"
+        components?.queryItems = [ URLQueryItem(name: "path", value: path)]
+        guard let url = components?.url else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
         request.setValue("OAuth \(String(describing: token))", forHTTPHeaderField: "Authorization")
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+        if let response = response as? HTTPURLResponse {
+            switch response.statusCode {
+            case 200..<300:
+                print("Success")
+            default:
+                print("Status: \(response.statusCode)")
+                
+            }
 
-              URLSession.shared.dataTask(with: request) { (data, response, error) in
-                  if let response = response as? HTTPURLResponse {
-                      switch response.statusCode {
-                      case 200..<300:
-                          print("Success")
-                      default:
-                          print("Status: \(response.statusCode)")
-                      }
-
-                  }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.requestPath()
-                    self.tableView.refreshControl?.endRefreshing()
-                    self.tableView.reloadData()
-                }
-              }.resume()
-        
+            }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.requestPath()
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+                
+            }
+            
+        }.resume()
         StorageFiles.storage.path = nil
     }
     
@@ -433,14 +426,12 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
             let fivc: FileInfoViewController = segue.destination as! FileInfoViewController
             let indexPath: IndexPath = self.tableView.indexPathForSelectedRow!
 
-            
             // передаем на второй экран информацию об выбранной ности
             fivc.name = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].name
             fivc.created = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].created
             fivc.mimeType = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].mime_type
             fivc.size = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].size
    
-            
             guard let image = StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage else {
                 
                 if StorageFiles.storage.embeded?._embedded?.items[indexPath.row].media_type == "audio"{
