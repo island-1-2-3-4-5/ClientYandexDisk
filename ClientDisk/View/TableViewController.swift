@@ -186,8 +186,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                    download.setValue(downloadIcon, forKey: "image")
 
         
-        
-        
                 let delete = UIAlertAction(title: "Удалить", style: .destructive) { _ in
                     StorageFiles.storage.path = item
 
