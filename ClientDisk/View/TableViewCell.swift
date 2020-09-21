@@ -14,18 +14,13 @@ class TableViewCell: UITableViewCell {
     weak var delegate: FileTableViewCellDelegate?
 
     
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
 
     @IBOutlet weak var previewImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var typeLabel: UILabel!
     
-    
+    //MARK: Заполнение ячейки
     func bindModel(_ model: StorageFiles.DiskFile, _ indexPath: IndexPath) {
         previewImage.layer.cornerRadius = 8
         previewImage.layer.shadowOffset = CGSize(width: 0, height: 0)
@@ -33,9 +28,7 @@ class TableViewCell: UITableViewCell {
         previewImage.layer.shadowRadius = 4
         previewImage.layer.shadowOpacity = 0.3
         
-        
-        
-        
+
         if model.type == "dir"{
         
         nameLabel.text = model.name
@@ -72,10 +65,7 @@ class TableViewCell: UITableViewCell {
 
             }
         }
-
-
-        
-        
+   
     }
     
     

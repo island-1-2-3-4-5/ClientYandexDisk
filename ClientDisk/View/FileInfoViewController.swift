@@ -28,12 +28,9 @@ class FileInfoViewController: UIViewController {
         
         setupView()
 
-
     }
     
- 
-    
-    
+
     fileprivate func setupView() {
         
         var sizeDouble = Double(size ?? 0) / 1024.0 / 1024.0
@@ -68,10 +65,7 @@ class FileInfoViewController: UIViewController {
         imageOutlet.layer.shadowRadius = 16
         imageOutlet.layer.shadowOpacity = 0.4
     }
-    
 
-
-  
  
      }
 

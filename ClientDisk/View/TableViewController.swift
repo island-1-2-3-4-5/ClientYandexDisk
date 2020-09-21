@@ -10,24 +10,7 @@ import UIKit
 
 class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
-    
-    //MARK: - Получение токена
-    func handleTokenChanged(token: String) {
-        StorageFiles.storage.token = token
-        
-        requestPath()
-    }
-    
-    
-         func requestToken() {
-            let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
-            passcodeVC.delegate = self
-            passcodeVC.modalPresentationStyle = .overFullScreen
-            present(passcodeVC, animated: true, completion: nil)
-        }
-    
-    
-    
+
     // кнопка назад
     @IBOutlet weak var backButtonOutlet: UIBarButtonItem!
     
@@ -72,6 +55,22 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     
     
     
+    //MARK: - Получение токена
+    func handleTokenChanged(token: String) {
+        StorageFiles.storage.token = token
+        
+        requestPath()
+    }
+    
+    
+         func requestToken() {
+            let passcodeVC = LoginViewController(nibName: "LoginViewController", bundle: nil)
+            passcodeVC.delegate = self
+            passcodeVC.modalPresentationStyle = .overFullScreen
+            present(passcodeVC, animated: true, completion: nil)
+        }
+    
+    
     
     
     //MARK: - ViewWillAppear
@@ -83,6 +82,7 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     
     
     
+    //MARK: Запрос пути
   @objc  func requestPath(){
         if StorageFiles.storage.embeded?.path == nil {
             updateData(path: "disk:/")
@@ -117,9 +117,7 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                 print("ЗАПИСЬ В БАЗУ ДАННЫХ\(newFiles)")
                         StorageFiles.storage.embeded = newFiles
                 
-                
-//MARK: Обновление интерфейса
-                DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     if newFiles.path == "disk:/"{
                         self.backButtonOutlet.isEnabled = false
@@ -157,8 +155,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         let replaceIcon = #imageLiteral(resourceName: "pngwing.com (3)")
         let downloadIcon = #imageLiteral(resourceName: "pngwing.com (5)")
 
-        
-        
         
                    // первая кнопка
                    let replace = UIAlertAction(title: "Переместить", style: .default) { _ in
@@ -208,7 +204,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                    // отображаем AlertController
                    present(actionSheet, animated: true)
 
-
     }
     
     
@@ -220,7 +215,7 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     }
     
     
-    //MARK: Перемещение файлов
+    //MARK: - Перемещение файлов
     @objc func replace(){
         addBarButton()
         
@@ -264,7 +259,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                       }
 
                   }
-                //MARK: Обновление интерфейса
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.requestPath()
@@ -280,7 +274,7 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     
     
     
-    //MARK: addBarButton
+    //MARK: Add AlertController
 
     func addBarButton(){
         let aboutButton = UIBarButtonItem.SystemItem.add
@@ -288,33 +282,29 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         navigationItem.rightBarButtonItem = button
     }
     
-    
+    // Добавление директорий
     @objc func add(){
-        
         
         // Создаем Алерт контроллер для добавления значений
         let ac = UIAlertController(title: "Добавление директории", message: "Введите название", preferredStyle: .alert)
         let ok = UIAlertAction(title: "Ok", style: .default) { action in
             guard let name = ac.textFields?[0].text else { return }
-         
             self.addFolder(name)
-            
         }
         
-        
-        ac.addTextField{
-            textField in
-        }
+        ac.addTextField{ textField in }
 
         let cancel = UIAlertAction(title: "Отмена", style: .cancel)
 
         ac.addAction(ok)
         ac.addAction(cancel)
         present(ac, animated: true, completion: nil) // отображаем на экране
-        
-
+    
     }
     
+    
+    
+    //MARK: - Создание папок
     func addFolder(_ name: String?){
                
     guard let token = StorageFiles.storage.token else {
@@ -350,7 +340,6 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                 }
 
         }
-    //MARK: Обновление интерфейса
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.requestPath()
@@ -364,18 +353,11 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     
     
     
-    
+    //MARK: - Скачивание файлов
     func download(){
 
         let path = StorageFiles.storage.file
         
-        downloadFile(path)
-
-    }
-    
-    
-    
-    func downloadFile(_ path: String?){
         guard let url = URL(string: path!) else { return }
          URLSession.shared.dataTask(with: url) { data, response, error in
              guard let data = data, error == nil else { return }
@@ -391,10 +373,9 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
              }
 
          }.resume()
-                    
-                    
 
     }
+    
     
     func share(url: URL) {
         documentInteractionController.url = url
@@ -404,21 +385,15 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
     }
     
     
-    
+    //MARK: - Удаление файлов
+
     func delete(){
         let path = StorageFiles.storage.path
 
-        deleteFile(path)
-        
-    }
-    
-    func deleteFile(_ path: String?){
         guard let token = StorageFiles.storage.token else {
             self.requestToken()
             return
         }
-       
-              
 
         var components = URLComponents(string: "https://cloud-api.yandex.net/v1/disk/resources")
         
@@ -438,20 +413,17 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
                       }
 
                   }
-                //MARK: Обновление интерфейса
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     self.requestPath()
                     self.tableView.refreshControl?.endRefreshing()
                     self.tableView.reloadData()
-                                    
                 }
               }.resume()
         
         StorageFiles.storage.path = nil
     }
-
-
+    
 
     
     
@@ -506,6 +478,9 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
 
     }
     
+    
+    
+    //MARK: - Навигация назад
     @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
         let name = StorageFiles.storage.embeded?.name
           let str = (StorageFiles.storage.embeded?.path)
@@ -523,14 +498,14 @@ class TableViewController: UITableViewController, LoginViewControllerDelegate {
         StorageFiles.storage.embeded?._embedded?.items.removeAll()
         tableView.reloadData()
         self.viewDidLoad()
-//        okBarButton()
-//        tableView.reloadData()
+
     }
     
 
     
     // MARK: - Table view data source
 
+    
 
     //MARK: Настройка ячейки
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
