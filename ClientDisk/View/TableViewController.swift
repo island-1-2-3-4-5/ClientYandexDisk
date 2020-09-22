@@ -309,3 +309,12 @@ extension TableViewController: FileTableViewCellDelegate, LoginViewControllerDel
         viewModel.load(stringUrl: stringUrl, completion: completion)
     }
 }
+
+extension URL {
+    var typeIdentifier: String? {
+        return (try? resourceValues(forKeys: [.typeIdentifierKey]))?.typeIdentifier
+    }
+    var localizedName: String? {
+        return (try? resourceValues(forKeys: [.localizedNameKey]))?.localizedName
+    }
+}
