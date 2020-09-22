@@ -20,7 +20,6 @@
 		0C100F072512907D00C44447 /* FileInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C100F062512907D00C44447 /* FileInfoViewController.swift */; };
 		0C22D43625152FA900393878 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C22D43525152FA900393878 /* WebKit.framework */; };
 		0C322FEE251A3FEF000D6269 /* TableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FED251A3FEF000D6269 /* TableViewModel.swift */; };
-		0C322FF0251A4000000D6269 /* CellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FEF251A4000000D6269 /* CellViewModel.swift */; };
 		0C322FF2251A400E000D6269 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FF1251A400E000D6269 /* LoginViewModel.swift */; };
 		0C322FF4251A401F000D6269 /* FileInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FF3251A401F000D6269 /* FileInfoViewModel.swift */; };
 		0C322FF6251A404F000D6269 /* LoginViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FF5251A404F000D6269 /* LoginViewControllerDelegate.swift */; };
@@ -28,6 +27,7 @@
 		0C322FFE251A4666000D6269 /* LoadData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FFD251A4666000D6269 /* LoadData.swift */; };
 		0C323000251A562E000D6269 /* LoadDataDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C322FFF251A562E000D6269 /* LoadDataDelegate.swift */; };
 		0C323002251A89C8000D6269 /* DownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C323001251A89C8000D6269 /* DownloadDelegate.swift */; };
+		0C323004251A93BE000D6269 /* CellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C323003251A93BE000D6269 /* CellViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,7 +46,6 @@
 		0C100F062512907D00C44447 /* FileInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoViewController.swift; sourceTree = "<group>"; };
 		0C22D43525152FA900393878 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		0C322FED251A3FEF000D6269 /* TableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewModel.swift; sourceTree = "<group>"; };
-		0C322FEF251A4000000D6269 /* CellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModel.swift; sourceTree = "<group>"; };
 		0C322FF1251A400E000D6269 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		0C322FF3251A401F000D6269 /* FileInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInfoViewModel.swift; sourceTree = "<group>"; };
 		0C322FF5251A404F000D6269 /* LoginViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewControllerDelegate.swift; sourceTree = "<group>"; };
@@ -54,6 +53,7 @@
 		0C322FFD251A4666000D6269 /* LoadData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadData.swift; sourceTree = "<group>"; };
 		0C322FFF251A562E000D6269 /* LoadDataDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadDataDelegate.swift; sourceTree = "<group>"; };
 		0C323001251A89C8000D6269 /* DownloadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadDelegate.swift; sourceTree = "<group>"; };
+		0C323003251A93BE000D6269 /* CellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,9 +162,9 @@
 			isa = PBXGroup;
 			children = (
 				0C322FED251A3FEF000D6269 /* TableViewModel.swift */,
-				0C322FEF251A4000000D6269 /* CellViewModel.swift */,
 				0C322FF1251A400E000D6269 /* LoginViewModel.swift */,
 				0C322FF3251A401F000D6269 /* FileInfoViewModel.swift */,
+				0C323003251A93BE000D6269 /* CellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -249,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C322FF0251A4000000D6269 /* CellViewModel.swift in Sources */,
 				0C100F01251128F000C44447 /* LoginViewController.swift in Sources */,
 				0C323002251A89C8000D6269 /* DownloadDelegate.swift in Sources */,
 				0C322FF4251A401F000D6269 /* FileInfoViewModel.swift in Sources */,
@@ -260,6 +259,7 @@
 				0C100F00251128F000C44447 /* TableViewController.swift in Sources */,
 				0C100EE2251128D000C44447 /* AppDelegate.swift in Sources */,
 				0C322FF6251A404F000D6269 /* LoginViewControllerDelegate.swift in Sources */,
+				0C323004251A93BE000D6269 /* CellViewModel.swift in Sources */,
 				0C322FEE251A3FEF000D6269 /* TableViewModel.swift in Sources */,
 				0C322FFE251A4666000D6269 /* LoadData.swift in Sources */,
 				0C100EFD251128F000C44447 /* StorageFiles.swift in Sources */,

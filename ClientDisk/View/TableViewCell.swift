@@ -12,7 +12,7 @@ class TableViewCell: UITableViewCell {
 
     
     weak var delegate: FileTableViewCellDelegate?
-
+    var cellViewModel = CellViewModel()
     
 
     @IBOutlet weak var previewImage: UIImageView!
@@ -30,37 +30,28 @@ class TableViewCell: UITableViewCell {
         
 
         if model.type == "dir"{
-        
+            
         nameLabel.text = model.name
         previewImage.image = UIImage(named: "directory")
 
         } else {
-            var size = Double(model.size ?? 0) / 1024.0 / 1024.0
             
-            if size > 1000 {
-                size /= 1024.0
-                sizeLabel.text = String(format: "%.2f", size) + " ГБ"
-
-            } else {
-                sizeLabel.text = String(format: "%.2f", size) + " МБ"
-            }
+        sizeLabel.text = cellViewModel.memorySize(size: model.size!)
+        nameLabel.text = model.name
+        typeLabel.text = cellViewModel.type(type: model.mime_type!)
             
-            nameLabel.text = model.name
             
-            let type = model.mime_type?.components(separatedBy: "/")
-            typeLabel.text = type![type!.count - 1]
-            
-            if let previewUrl = model.preview {
-                delegate?.loadImage(stringUrl: previewUrl, completion: { [weak self] (image) in
-                    self?.previewImage.image = image
-                    let previewImage = image!.pngData() as Data?
-                    StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage = previewImage
-                })
+        if let previewUrl = model.preview {
+            delegate?.loadImage(stringUrl: previewUrl, completion: { [weak self] (image) in
+                self?.previewImage.image = image
+                let previewImage = image!.pngData() as Data?
+                StorageFiles.storage.embeded?._embedded?.items[indexPath.row].previewImage = previewImage
+            })
+                
             } else if model.media_type == "audio" {
                 previewImage.image = UIImage(named: "mp3")
 
             } else {
-
                 previewImage.image = UIImage(named: "file")
 
             }
